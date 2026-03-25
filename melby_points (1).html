@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Melby Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --crimson: #8B1A1A;
+    --crimson-light: #B52B2B;
+    --ink: #1A1208;
+    --parchment: #F5EDD6;
+    --parchment-dark: #E8D9B0;
+    --parchment-deeper: #D4C08A;
+    --ivory: #FDFAF0;
+    --shadow: rgba(26,18,8,0.4);
+    --emerald: #1B5E3B;
+    --emerald-light: #2D8A5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'EB Garamond', serif;
+    background: var(--ink);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 80px),
+      repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    position: relative;
+  }
+
+  .crown-icon {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 20px var(--gold));
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 15px var(--gold)); }
+    50% { filter: drop-shadow(0 0 30px var(--gold-light)); }
+  }
+
+  header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(22px, 5vw, 42px);
+    color: var(--gold-light);
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.5), 2px 2px 0 var(--gold-dark);
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--parchment-deeper);
+    letter-spacing: 6px;
+    margin-top: 8px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+    color: var(--gold);
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .divider span { font-size: 20px; }
+
+  /* NAVIGATION */
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 30px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    padding: 4px;
+  }
+
+  nav button {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: var(--parchment-deeper);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  nav button.active {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--ink);
+    font-weight: 700;
+    box-shadow: 0 2px 12px rgba(201,168,76,0.4);
+  }
+
+  nav button:hover:not(.active) {
+    background: rgba(201,168,76,0.15);
+    color: var(--gold-light);
+  }
+
+  /* PANELS */
+  .panel { display: none; animation: fadeIn 0.4s ease; }
+  .panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PARCHMENT CARD */
+  .card {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment), var(--parchment-dark));
+    border: 2px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 30px;
+    position: relative;
+    box-shadow:
+      0 4px 30px var(--shadow),
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      inset 0 -1px 0 rgba(139,105,20,0.3);
+    margin-bottom: 20px;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--crimson);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* FORM ELEMENTS */
+  label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  select, input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(245,237,214,0.6);
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(245,237,214,0.9);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* PRESET REASONS */
+  .presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .preset-btn {
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--ink);
+    text-align: left;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preset-btn:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+
+  .preset-btn.selected-award {
+    background: rgba(27,94,59,0.15);
+    border-color: var(--emerald);
+    color: var(--emerald);
+  }
+
+  .preset-btn.selected-deduct {
+    background: rgba(139,26,26,0.12);
+    border-color: var(--crimson);
+    color: var(--crimson);
+  }
+
+  .preset-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    display: block;
+  }
+
+  /* MELBY AMOUNT */
+  .amount-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ACTION BUTTONS */
+  .btn-award, .btn-deduct {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .btn-award {
+    background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+    color: var(--ivory);
+    box-shadow: 0 4px 15px rgba(27,94,59,0.4);
+  }
+
+  .btn-award:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(27,94,59,0.5);
+  }
+
+  .btn-deduct {
+    background: linear-gradient(135deg, var(--crimson), var(--crimson-light));
+    color: var(--ivory);
+    box-shadow: 0 4px 15px rgba(139,26,26,0.4);
+  }
+
+  .btn-deduct:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139,26,26,0.5);
+  }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 24px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    z-index: 1000;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 300px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .toast.show { transform: translateX(0); }
+  .toast.award { background: var(--emerald); color: var(--ivory); border: 1px solid var(--emerald-light); }
+  .toast.deduct { background: var(--crimson); color: var(--ivory); border: 1px solid var(--crimson-light); }
+
+  /* LEADERBOARD */
+  .leaderboard { list-style: none; }
+
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--ivory), var(--parchment));
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .leaderboard-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+  }
+
+  .leaderboard-item.rank-1::before { background: linear-gradient(to bottom, #FFD700, #C9A84C); }
+  .leaderboard-item.rank-2::before { background: linear-gradient(to bottom, #C0C0C0, #A0A0A0); }
+  .leaderboard-item.rank-3::before { background: linear-gradient(to bottom, #CD7F32, #A05A20); }
+  .leaderboard-item.rank-other::before { background: var(--parchment-deeper); }
+
+  .rank-badge {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    font-weight: 900;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .rank-1 .rank-badge { color: #C9A84C; }
+  .rank-2 .rank-badge { color: #A0A0A0; }
+  .rank-3 .rank-badge { color: #CD7F32; }
+  .rank-other .rank-badge { color: var(--parchment-deeper); font-size: 14px; }
+
+  .staff-name {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .melby-score {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold-dark);
+  }
+
+  .melby-score .unit {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dark);
+    opacity: 0.7;
+    display: block;
+    text-align: right;
+  }
+
+  .score-positive { color: var(--emerald); }
+  .score-negative { color: var(--crimson); }
+
+  /* STAFF VIEW */
+  .staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .staff-card {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment));
+    border: 1px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .staff-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px var(--shadow);
+    border-color: var(--gold);
+  }
+
+  .staff-card.selected-card {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px var(--gold), 0 8px 30px var(--shadow);
+  }
+
+  .staff-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--ink);
+    border: 2px solid var(--gold-light);
+    box-shadow: 0 4px 12px rgba(201,168,76,0.3);
+  }
+
+  .staff-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .staff-card-score {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .staff-card-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  /* HISTORY */
+  .history-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    font-size: 15px;
+  }
+
+  .history-icon {
+    font-size: 18px;
+    min-width: 24px;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .history-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .history-reason { color: var(--ink); opacity: 0.8; font-style: italic; }
+  .history-time { font-size: 12px; opacity: 0.5; font-family: 'Cinzel', serif; letter-spacing: 1px; }
+
+  .history-amount {
+    margin-left: auto;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ADD STAFF */
+  .btn-secondary {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-gold {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,18,8,0.85);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s;
+  }
+
+  .modal {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment));
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    position: relative;
+  }
+
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--crimson);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--gold-dark);
+    padding: 4px;
+    line-height: 1;
+  }
+
+  .staff-history-list { max-height: 300px; overflow-y: auto; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--parchment-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .total-stat {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold-dark);
+    opacity: 0.8;
+  }
+
+  /* Toggle for award type in presets */
+  .preset-type-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .toggle-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    border: 1px solid;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .toggle-award { border-color: var(--emerald); color: var(--emerald); }
+  .toggle-award.active { background: var(--emerald); color: white; }
+  .toggle-deduct { border-color: var(--crimson); color: var(--crimson); }
+  .toggle-deduct.active { background: var(--crimson); color: white; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--parchment-deeper);
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 600px) {
+    .amount-row, .btn-row { grid-template-columns: 1fr; }
+    .presets { grid-template-columns: 1fr 1fr; }
+    nav button { padding: 8px 12px; font-size: 10px; }
+  }
+
+  /* PASSWORD LOCK */
+  .lock-screen {
+    text-align: center;
+    padding: 50px 30px;
+  }
+
+  .lock-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 12px var(--gold));
+  }
+
+  .lock-title {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .lock-subtitle {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--parchment-deeper);
+    opacity: 0.7;
+    margin-bottom: 28px;
+    font-size: 16px;
+  }
+
+  .lock-input-wrap {
+    display: flex;
+    gap: 10px;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .lock-input-wrap input {
+    flex: 1;
+    margin-bottom: 0;
+    text-align: center;
+    letter-spacing: 3px;
+    font-size: 18px;
+  }
+
+  .lock-error {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--crimson-light);
+    margin-top: 12px;
+    height: 18px;
+    text-transform: uppercase;
+  }
+
+  .btn-lock-out {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-left: 8px;
+  }
+  .btn-lock-out:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="crown-icon">♛</div>
+    <h1>The Melby Registry</h1>
+    <p class="subtitle">Royal Decree of Queen Britta</p>
+  </header>
+
+  <div class="divider"><span>✦</span></div>
+
+  <nav>
+    <button class="active" onclick="switchPanel('dashboard')">⚜ Dashboard</button>
+    <button onclick="switchPanel('award')">✦ Award Melbys</button>
+    <button onclick="switchPanel('staff')">👥 Staff Scores</button>
+    <button onclick="switchPanel('history')">📜 Ledger</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div id="panel-dashboard" class="panel active">
+    <div class="card">
+      <div class="section-header">
+        <div class="card-title">⚜ Royal Rankings</div>
+        <div class="total-stat" id="total-melbys-stat"></div>
+      </div>
+      <ul class="leaderboard" id="leaderboard"></ul>
+      <div id="dashboard-empty" class="empty-state" style="display:none;">No staff enrolled yet. Add staff members to begin.</div>
+    </div>
+    <div style="text-align:center; margin-top:12px;">
+      <button class="btn-secondary" onclick="openAddStaff()">+ Enroll New Staff Member</button>
+    </div>
+  </div>
+
+  <!-- AWARD PANEL -->
+  <div id="panel-award" class="panel">
+
+    <!-- LOCK SCREEN -->
+    <div id="award-lock" class="card">
+      <div class="lock-screen">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-title">Royal Clearance Required</div>
+        <div class="lock-subtitle">This chamber is reserved for Queen Britta alone.</div>
+        <div class="lock-input-wrap">
+          <input type="password" id="lock-password" placeholder="Enter password..." onkeydown="if(event.key==='Enter')tryUnlock()">
+          <button class="btn-gold" onclick="tryUnlock()">Enter</button>
+        </div>
+        <div class="lock-error" id="lock-error"></div>
+      </div>
+    </div>
+
+    <!-- AWARD CONTENT (hidden until unlocked) -->
+    <div id="award-content" style="display:none;">
+      <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;">
+        <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--gold-dark);letter-spacing:2px;">⚜ Queen Britta</span>
+        <button class="btn-lock-out" onclick="lockAward()">🔒 Lock</button>
+      </div>
+      <div class="card">
+        <div class="card-title">✦ Issue Melbys</div>
+
+        <label>Staff Member</label>
+        <select id="award-staff">
+          <option value="">— Select a member of staff —</option>
+        </select>
+
+        <label>Reason</label>
+        <div class="preset-type-toggle">
+          <button class="toggle-btn toggle-award active" onclick="setPresetType('award')">🌿 Merits</button>
+          <button class="toggle-btn toggle-deduct" onclick="setPresetType('deduct')">🔻 Demerits</button>
+        </div>
+        <div class="presets" id="presets-container"></div>
+
+        <label>Custom Reason (optional)</label>
+        <textarea id="custom-reason" placeholder="Describe the deed in detail..."></textarea>
+
+        <div class="amount-row">
+          <div>
+            <label>Melbys to Award</label>
+            <input type="number" id="award-amount" value="5" min="1" max="1000">
+          </div>
+          <div>
+            <label>Melbys to Deduct</label>
+            <input type="number" id="deduct-amount" value="5" min="1" max="1000">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-award" onclick="processAction('award')">⬆ Award Melbys</button>
+          <button class="btn-deduct" onclick="processAction('deduct')">⬇ Deduct Melbys</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STAFF SCORES -->
+  <div id="panel-staff" class="panel">
+    <div class="card">
+      <div class="section-header">
+        <div class="card-title">👥 Staff Scoreboard</div>
+        <button class="btn-secondary" onclick="openAddStaff()">+ Add Member</button>
+      </div>
+      <div class="staff-grid" id="staff-grid"></div>
+      <div id="staff-empty" class="empty-state" style="display:none;">No staff enrolled yet.</div>
+    </div>
+  </div>
+
+  <!-- HISTORY / LEDGER -->
+  <div id="panel-history" class="panel">
+    <div class="card">
+      <div class="card-title">📜 The Royal Ledger</div>
+      <div id="history-list"></div>
+      <div id="history-empty" class="empty-state" style="display:none;">The ledger is empty. No Melbys have been issued yet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STAFF MODAL -->
+<div class="modal-overlay" id="add-staff-modal" style="display:none;" onclick="if(event.target===this)closeAddStaff()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAddStaff()">✕</button>
+    <div class="modal-title">⚜ Enroll Staff Member</div>
+    <label>Full Name</label>
+    <input type="text" id="new-staff-name" placeholder="Enter name..." onkeydown="if(event.key==='Enter')addStaff()">
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn-secondary" onclick="closeAddStaff()">Cancel</button>
+      <button class="btn-gold" onclick="addStaff()" style="flex:1;">Enroll Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF DETAIL MODAL -->
+<div class="modal-overlay" id="staff-detail-modal" style="display:none;" onclick="if(event.target===this)closeStaffDetail()">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeStaffDetail()">✕</button>
+    <div class="modal-title" id="detail-name"></div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div id="detail-score" style="font-family:'Cinzel Decorative',serif;font-size:42px;font-weight:900;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold-dark);opacity:0.7;">MELBYS</div>
+    </div>
+    <div class="card-title" style="font-size:13px;margin-bottom:12px;">Recent Activity</div>
+    <div class="staff-history-list" id="staff-history-list"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────
+const STORAGE_KEY_STAFF = 'melby_staff';
+const STORAGE_KEY_HISTORY = 'melby_history';
+
+let staff = JSON.parse(localStorage.getItem(STORAGE_KEY_STAFF) || '[]');
+let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+let currentPresetType = 'award';
+let selectedPreset = null;
+
+const PRESET_REASONS = {
+  award: [
+    { label: 'Exceptional Work', text: 'Exceptional work and above-and-beyond effort' },
+    { label: 'Punctuality', text: 'Exemplary punctuality and time management' },
+    { label: 'Team Spirit', text: 'Outstanding contribution to team morale' },
+    { label: 'Problem Solved', text: 'Solved a complex problem with great skill' },
+    { label: 'Client Praise', text: 'Received glowing praise from a client' },
+    { label: 'Initiative', text: 'Showed remarkable initiative without being asked' },
+    { label: 'Creative Idea', text: 'Proposed a brilliant and innovative idea' },
+    { label: 'Royal Conduct', text: 'Conducted themselves with the utmost dignity' },
+  ],
+  deduct: [
+    { label: 'Late Arrival', text: 'Arrived late without a satisfactory excuse' },
+    { label: 'Missed Deadline', text: 'Failed to meet an agreed deadline' },
+    { label: 'Shoddy Work', text: 'Submitted work of an unacceptable standard' },
+    { label: 'Poor Attitude', text: 'Displayed a poor attitude toward colleagues' },
+    { label: 'Disorganisation', text: 'Demonstrated a concerning lack of organisation' },
+    { label: 'Email Ignored', text: 'Failed to respond to correspondence in a timely manner' },
+    { label: 'Disturbance', text: 'Caused an unnecessary disturbance in the workplace' },
+    { label: 'Royal Infraction', text: 'Committed a minor infraction against royal protocol' },
+  ]
+};
+
+// ─── SAVE ────────────────────────────────────────────
+function save() {
+  localStorage.setItem(STORAGE_KEY_STAFF, JSON.stringify(staff));
+  localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+}
+
+// ─── PANEL SWITCHING ─────────────────────────────────
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'award') renderAwardPanel();
+  if (name === 'staff') renderStaffPanel();
+  if (name === 'history') renderHistory();
+}
+
+// ─── DASHBOARD ───────────────────────────────────────
+function renderDashboard() {
+  const el = document.getElementById('leaderboard');
+  const empty = document.getElementById('dashboard-empty');
+  const sorted = [...staff].sort((a, b) => b.score - a.score);
+  const total = staff.reduce((sum, s) => sum + Math.max(0, s.score), 0);
+  document.getElementById('total-melbys-stat').textContent = total + ' total melbys issued';
+
+  if (!sorted.length) {
+    el.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const rankClass = (i) => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+  const rankLabel = (i) => i === 0 ? '♛' : i === 1 ? '♜' : i === 2 ? '♞' : (i + 1);
+  const scoreClass = (s) => s > 0 ? 'score-positive' : s < 0 ? 'score-negative' : '';
+
+  el.innerHTML = sorted.map((s, i) => `
+    <li class="leaderboard-item ${rankClass(i)}">
+      <span class="rank-badge">${rankLabel(i)}</span>
+      <span class="staff-name">${s.name}</span>
+      <span class="melby-score ${scoreClass(s.score)}">
+        ${s.score > 0 ? '+' : ''}${s.score}
+        <span class="unit">Melbys</span>
+      </span>
+    </li>
+  `).join('');
+}
+
+// ─── AWARD PANEL ─────────────────────────────────────
+function renderAwardPanel() {
+  const sel = document.getElementById('award-staff');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Select a member of staff —</option>' +
+    staff.map(s => `<option value="${s.id}" ${s.id == current ? 'selected' : ''}>${s.name}</option>`).join('');
+  renderPresets();
+}
+
+function setPresetType(type) {
+  currentPresetType = type;
+  selectedPreset = null;
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.toggle-' + type).classList.add('active');
+  renderPresets();
+}
+
+function renderPresets() {
+  const container = document.getElementById('presets-container');
+  container.innerHTML = PRESET_REASONS[currentPresetType].map((r, i) => `
+    <button class="preset-btn ${selectedPreset === i ? 'selected-' + currentPresetType : ''}"
+            onclick="selectPreset(${i})">
+      <span class="preset-label">${r.label}</span>
+      ${r.text}
+    </button>
+  `).join('');
+}
+
+function selectPreset(i) {
+  selectedPreset = selectedPreset === i ? null : i;
+  if (selectedPreset !== null) {
+    document.getElementById('custom-reason').value = '';
+  }
+  renderPresets();
+}
+
+function processAction(type) {
+  const staffId = document.getElementById('award-staff').value;
+  if (!staffId) { showToast('Please select a staff member.', 'deduct'); return; }
+
+  const amountInput = document.getElementById(type === 'award' ? 'award-amount' : 'deduct-amount');
+  const amount = parseInt(amountInput.value);
+  if (!amount || amount < 1) { showToast('Please enter a valid amount.', 'deduct'); return; }
+
+  let reason = document.getElementById('custom-reason').value.trim();
+  if (!reason && selectedPreset !== null) {
+    reason = PRESET_REASONS[currentPresetType][selectedPreset].text;
+  }
+  if (!reason) { showToast('Please select or enter a reason.', 'deduct'); return; }
+
+  const member = staff.find(s => s.id == staffId);
+  const delta = type === 'award' ? amount : -amount;
+  member.score += delta;
+
+  history.unshift({
+    staffId: member.id,
+    staffName: member.name,
+    reason,
+    delta,
+    type,
+    timestamp: new Date().toISOString()
+  });
+
+  save();
+  selectedPreset = null;
+  document.getElementById('custom-reason').value = '';
+  renderPresets();
+  renderAwardPanel();
+
+  showToast(
+    type === 'award'
+      ? `+${amount} Melbys awarded to ${member.name}`
+      : `-${amount} Melbys deducted from ${member.name}`,
+    type
+  );
+}
+
+// ─── STAFF PANEL ─────────────────────────────────────
+function renderStaffPanel() {
+  const grid = document.getElementById('staff-grid');
+  const empty = document.getElementById('staff-empty');
+  if (!staff.length) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  const scoreClass = (s) => s > 0 ? 'score-positive' : s < 0 ? 'score-negative' : '';
+
+  grid.innerHTML = staff.map(s => `
+    <div class="staff-card" onclick="openStaffDetail('${s.id}')">
+      <div class="staff-avatar">${s.name.charAt(0).toUpperCase()}</div>
+      <div class="staff-card-name">${s.name}</div>
+      <div class="staff-card-score ${scoreClass(s.score)}">${s.score > 0 ? '+' : ''}${s.score}</div>
+      <div class="staff-card-label">Melbys</div>
+    </div>
+  `).join('');
+}
+
+// ─── HISTORY ─────────────────────────────────────────
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  const empty = document.getElementById('history-empty');
+  if (!history.length) {
+    el.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  el.innerHTML = history.slice(0, 60).map(h => `
+    <div class="history-item">
+      <span class="history-icon">${h.type === 'award' ? '🌿' : '🔻'}</span>
+      <div style="flex:1;">
+        <div class="history-name">${h.staffName}</div>
+        <div class="history-reason">${h.reason}</div>
+        <div class="history-time">${formatTime(h.timestamp)}</div>
+      </div>
+      <div class="history-amount ${h.delta > 0 ? 'score-positive' : 'score-negative'}">
+        ${h.delta > 0 ? '+' : ''}${h.delta}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── STAFF DETAIL MODAL ───────────────────────────────
+function openStaffDetail(id) {
+  const member = staff.find(s => s.id == id);
+  if (!member) return;
+  const scoreClass = member.score > 0 ? 'score-positive' : member.score < 0 ? 'score-negative' : '';
+  document.getElementById('detail-name').textContent = '⚜ ' + member.name;
+  document.getElementById('detail-score').className = scoreClass;
+  document.getElementById('detail-score').textContent = (member.score > 0 ? '+' : '') + member.score;
+  const memberHistory = history.filter(h => h.staffId == id).slice(0, 20);
+  const listEl = document.getElementById('staff-history-list');
+  if (!memberHistory.length) {
+    listEl.innerHTML = '<div class="empty-state">No activity recorded yet.</div>';
+  } else {
+    listEl.innerHTML = memberHistory.map(h => `
+      <div class="history-item">
+        <span class="history-icon">${h.type === 'award' ? '🌿' : '🔻'}</span>
+        <div style="flex:1;">
+          <div class="history-reason">${h.reason}</div>
+          <div class="history-time">${formatTime(h.timestamp)}</div>
+        </div>
+        <div class="history-amount ${h.delta > 0 ? 'score-positive' : 'score-negative'}">
+          ${h.delta > 0 ? '+' : ''}${h.delta}
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('staff-detail-modal').style.display = 'flex';
+}
+
+function closeStaffDetail() {
+  document.getElementById('staff-detail-modal').style.display = 'none';
+}
+
+// ─── ADD STAFF ────────────────────────────────────────
+function openAddStaff() {
+  document.getElementById('add-staff-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('new-staff-name').focus(), 100);
+}
+
+function closeAddStaff() {
+  document.getElementById('add-staff-modal').style.display = 'none';
+  document.getElementById('new-staff-name').value = '';
+}
+
+function addStaff() {
+  const name = document.getElementById('new-staff-name').value.trim();
+  if (!name) { showToast('Please enter a name.', 'deduct'); return; }
+  if (staff.find(s => s.name.toLowerCase() === name.toLowerCase())) {
+    showToast('This member is already enrolled.', 'deduct'); return;
+  }
+  staff.push({ id: Date.now(), name, score: 0 });
+  save();
+  closeAddStaff();
+  renderDashboard();
+  renderAwardPanel();
+  renderStaffPanel();
+  showToast(name + ' has been enrolled.', 'award');
+}
+
+// ─── TOAST ────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ─── HELPERS ─────────────────────────────────────────
+function formatTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+// ─── PASSWORD LOCK ────────────────────────────────────
+const SECRETARY_PASSWORD = 'Peasants';
+let isUnlocked = false;
+
+function tryUnlock() {
+  const input = document.getElementById('lock-password');
+  if (input.value === SECRETARY_PASSWORD) {
+    isUnlocked = true;
+    input.value = '';
+    document.getElementById('lock-error').textContent = '';
+    document.getElementById('award-lock').style.display = 'none';
+    document.getElementById('award-content').style.display = 'block';
+    renderAwardPanel();
+  } else {
+    document.getElementById('lock-error').textContent = 'Access denied. Try again.';
+    input.value = '';
+    input.focus();
+    // Shake animation
+    input.style.animation = 'none';
+    setTimeout(() => { input.style.animation = ''; }, 10);
+  }
+}
+
+function lockAward() {
+  isUnlocked = false;
+  document.getElementById('award-lock').style.display = 'block';
+  document.getElementById('award-content').style.display = 'none';
+}
+
+// Reset lock when leaving the award tab
+const _origSwitch = switchPanel;
+function switchPanel(name) {
+  if (name !== 'award' && isUnlocked) {
+    // keep unlocked state while on other tabs - lock only on next visit
+  }
+  _origSwitch(name);
+  // When returning to award tab, show correct state
+  if (name === 'award') {
+    document.getElementById('award-lock').style.display = isUnlocked ? 'none' : 'block';
+    document.getElementById('award-content').style.display = isUnlocked ? 'block' : 'none';
+    if (isUnlocked) renderAwardPanel();
+    else setTimeout(() => document.getElementById('lock-password').focus(), 100);
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>
